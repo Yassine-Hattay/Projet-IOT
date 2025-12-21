@@ -1,0 +1,3 @@
+LWN : make run
+Chirp stack : through docker desktop
+node red : node-red

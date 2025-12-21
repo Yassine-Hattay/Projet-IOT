@@ -1,0 +1,2283 @@
+[
+    {
+        "id": "e94e6d738d65be87",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e2387f48cfa34f5b",
+        "type": "mqtt in",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "topic": "application/+/device/+/event/up",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "de8065791420b99a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 40,
+        "wires": [
+            [
+                "ad48ed605c23f2ee"
+            ]
+        ]
+    },
+    {
+        "id": "ad48ed605c23f2ee",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Parse sensor data",
+        "func": "// Decode Base64 payload if present\nif (msg.payload.data) {\n    const decoded = Buffer.from(msg.payload.data, 'base64').toString('utf8');\n    msg.payload.object = JSON.parse(decoded);\n}\n\n// Extract interval\nconst min = Number(msg.payload.object.min);\nconst max = Number(msg.payload.object.max);\n\n// Generate random value between min and max\nconst value = Math.random() * (max - min) + min;\n\n// Build clean payload\nmsg.payload = {\n    device: msg.payload.deviceInfo.deviceName,\n    sensor: msg.payload.object.sensor,\n    value: Math.round(value * 10) / 10, // 1 decimal\n    time: msg.payload.time\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 40,
+        "wires": [
+            [
+                "f5a07df3bf99a802"
+            ]
+        ]
+    },
+    {
+        "id": "f5a07df3bf99a802",
+        "type": "switch",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "property": "payload.sensor",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "temperature",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "humidity",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "vibration",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 550,
+        "y": 40,
+        "wires": [
+            [
+                "3d9f0425e5b4fc0a",
+                "6cb6f86cd042109d",
+                "f3c8b23659b9e08a"
+            ],
+            [
+                "345a8fc8f7421e98",
+                "87399d92f79acc50",
+                "bbb1fd90c96833fe"
+            ],
+            [
+                "e4c2d094109f6fa9",
+                "9bdbf3fdc93f7649",
+                "3178fb366ec535bf"
+            ]
+        ]
+    },
+    {
+        "id": "3d9f0425e5b4fc0a",
+        "type": "ui-gauge",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "group": "a0b06d78f45c5cfe",
+        "order": 4,
+        "value": "payload.value",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Tempreature",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "C°",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "100",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 830,
+        "y": 20,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "345a8fc8f7421e98",
+        "type": "ui-gauge",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "group": "a0b06d78f45c5cfe",
+        "order": 8,
+        "value": "payload.value",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "humidity",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "%",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "100",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 820,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e4c2d094109f6fa9",
+        "type": "ui-gauge",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "group": "a0b06d78f45c5cfe",
+        "order": 12,
+        "value": "payload.value",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "vibrations",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "mm/s",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "5",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "11",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "15",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 820,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6cb6f86cd042109d",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "parse for csv",
+        "func": "// Build CSV line\n\nmsg.payload =\n    msg.payload.time + \",\" +\n    msg.payload.device + \",\" +\n    msg.payload.sensor + \",\" +\n    msg.payload.value;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 160,
+        "wires": [
+            [
+                "b4ec98b28565c0c8"
+            ]
+        ]
+    },
+    {
+        "id": "b4ec98b28565c0c8",
+        "type": "file",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "filename": "C:\\Users\\hatta\\Desktop\\study\\M2\\Technologies de communications pour l’IoT\\TP\\sensor Data\\tempreature.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1330,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dd5d3789a1e66e9a",
+        "type": "file",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "filename": "C:\\Users\\hatta\\Desktop\\study\\M2\\Technologies de communications pour l’IoT\\TP\\sensor Data\\humidity.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1320,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8f5b3aa516c8f3f7",
+        "type": "file",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "filename": "C:\\Users\\hatta\\Desktop\\study\\M2\\Technologies de communications pour l’IoT\\TP\\sensor Data\\vibrations.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1330,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "87399d92f79acc50",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "parse for csv",
+        "func": "// Build CSV line\n\nmsg.payload =\n    msg.payload.time + \",\" +\n    msg.payload.device + \",\" +\n    msg.payload.sensor + \",\" +\n    msg.payload.value;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 200,
+        "wires": [
+            [
+                "dd5d3789a1e66e9a"
+            ]
+        ]
+    },
+    {
+        "id": "9bdbf3fdc93f7649",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "parse for csv",
+        "func": "// Build CSV line\n\nmsg.payload =\n    msg.payload.time + \",\" +\n    msg.payload.device + \",\" +\n    msg.payload.sensor + \",\" +\n    msg.payload.value;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 240,
+        "wires": [
+            [
+                "8f5b3aa516c8f3f7"
+            ]
+        ]
+    },
+    {
+        "id": "ec79a5a154d94b86",
+        "type": "file in",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "filename": "C:\\Users\\hatta\\Desktop\\study\\M2\\Technologies de communications pour l’IoT\\TP\\sensor Data\\tempreature.csv",
+        "filenameType": "str",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": true,
+        "x": 1330,
+        "y": 300,
+        "wires": [
+            [
+                "bfaabdb43a1d092b"
+            ]
+        ]
+    },
+    {
+        "id": "fad63a051d0744df",
+        "type": "file in",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "filename": "C:\\Users\\hatta\\Desktop\\study\\M2\\Technologies de communications pour l’IoT\\TP\\sensor Data\\humidity.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1320,
+        "y": 340,
+        "wires": [
+            [
+                "5e6dfc638247485a"
+            ]
+        ]
+    },
+    {
+        "id": "3bc77e121862f543",
+        "type": "file in",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "filename": "C:\\Users\\hatta\\Desktop\\study\\M2\\Technologies de communications pour l’IoT\\TP\\sensor Data\\vibrations.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1330,
+        "y": 380,
+        "wires": [
+            [
+                "e1acfe9262b248bb"
+            ]
+        ]
+    },
+    {
+        "id": "bfaabdb43a1d092b",
+        "type": "csv",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "spec": "rfc",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\r\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 1810,
+        "y": 300,
+        "wires": [
+            [
+                "1710ac281b4447a2",
+                "dbb044c74926fa3d"
+            ]
+        ]
+    },
+    {
+        "id": "1710ac281b4447a2",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Format Timestamp",
+        "func": "// Get the ISO timestamp from the CSV output\nlet isoTime = msg.payload.col1;\n\n// Create a Date object (used for X-axis)\nlet dateObj = new Date(isoTime);\nmsg.payload.time = dateObj;  // pass Date object to chart\n\n// Optionally, keep a formatted string for display\nmsg.payload.timeLabel = dateObj.toTimeString().split(' ')[0]; // \"HH:MM:SS\"\n\n// Keep only the value for Y-axis\nmsg.payload.value = msg.payload.col4;\n\n// Return the message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1990,
+        "y": 340,
+        "wires": [
+            [
+                "12523794dfc2f36f"
+            ]
+        ]
+    },
+    {
+        "id": "12523794dfc2f36f",
+        "type": "ui-chart",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "",
+        "label": "Tempreature chart",
+        "order": 2,
+        "chartType": "line",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "Time",
+        "xAxisProperty": "payload.timeLabel",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "category",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "Tempreature ",
+        "yAxisProperty": "payload.value",
+        "yAxisPropertyType": "msg",
+        "ymin": "0",
+        "ymax": "100",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "30",
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "50",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "interpolation": "linear",
+        "x": 2330,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5e6dfc638247485a",
+        "type": "csv",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "spec": "rfc",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\r\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 1810,
+        "y": 340,
+        "wires": [
+            [
+                "ecc29edde094cc52",
+                "4f6ff1573816f7fc"
+            ]
+        ]
+    },
+    {
+        "id": "d36e9f821484ac6d",
+        "type": "ui-chart",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "",
+        "label": "Smoothed humidity chart",
+        "order": 6,
+        "chartType": "line",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "Time",
+        "xAxisProperty": "payload.timeLabel",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "category",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "Humidity",
+        "yAxisProperty": "payload.value",
+        "yAxisPropertyType": "msg",
+        "ymin": "0",
+        "ymax": "100",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "30",
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "50",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "interpolation": "linear",
+        "x": 2350,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e1acfe9262b248bb",
+        "type": "csv",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "spec": "rfc",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\r\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 1810,
+        "y": 380,
+        "wires": [
+            [
+                "9b34fd26e20add2b",
+                "46f2f766275650f0"
+            ]
+        ]
+    },
+    {
+        "id": "a0906f12eccfd324",
+        "type": "ui-chart",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "",
+        "label": "vibration chart",
+        "order": 8,
+        "chartType": "line",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "Vibrations",
+        "xAxisProperty": "payload.timeLabel",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "category",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "Tempreature ",
+        "yAxisProperty": "payload.value",
+        "yAxisPropertyType": "msg",
+        "ymin": "0",
+        "ymax": "15",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "30",
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "50",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "interpolation": "linear",
+        "x": 2320,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ae637eaf93abaf5f",
+        "type": "ui-button",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "Plot history",
+        "label": "Plot history",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 850,
+        "y": 340,
+        "wires": [
+            [
+                "ec79a5a154d94b86",
+                "fad63a051d0744df",
+                "3bc77e121862f543"
+            ]
+        ]
+    },
+    {
+        "id": "f400eadb7bbfa650",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Clear",
+        "func": "// Send an empty array to clear the chart\nmsg.payload = [];\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2030,
+        "y": 580,
+        "wires": [
+            [
+                "12523794dfc2f36f",
+                "84a23f05e594f99d"
+            ]
+        ]
+    },
+    {
+        "id": "d8802e7a0c7db354",
+        "type": "ui-button",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "Clear temperature",
+        "label": "Clear temperature",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1850,
+        "y": 580,
+        "wires": [
+            [
+                "f400eadb7bbfa650"
+            ]
+        ]
+    },
+    {
+        "id": "61322ace88616a90",
+        "type": "ui-button",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "Clear humidity",
+        "label": "Clear humidity",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1860,
+        "y": 620,
+        "wires": [
+            [
+                "836a1fa5da7eb2f0"
+            ]
+        ]
+    },
+    {
+        "id": "0c55b54b5a14dfeb",
+        "type": "ui-button",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "Clear vibrations",
+        "label": "Clear vibrations",
+        "order": 10,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1860,
+        "y": 660,
+        "wires": [
+            [
+                "ada15f7eaa8a0e01"
+            ]
+        ]
+    },
+    {
+        "id": "836a1fa5da7eb2f0",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Clear",
+        "func": "// Send an empty array to clear the chart\nmsg.payload = [];\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2030,
+        "y": 620,
+        "wires": [
+            [
+                "d978b39a845d2f9b",
+                "d36e9f821484ac6d"
+            ]
+        ]
+    },
+    {
+        "id": "ada15f7eaa8a0e01",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Clear",
+        "func": "// Send an empty array to clear the chart\nmsg.payload = [];\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2030,
+        "y": 660,
+        "wires": [
+            [
+                "a0906f12eccfd324",
+                "d0ed2b9f78e921e7"
+            ]
+        ]
+    },
+    {
+        "id": "f3c8b23659b9e08a",
+        "type": "switch",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "property": "payload.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "60",
+                "vt": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "31",
+                "vt": "num",
+                "v2": "59",
+                "v2t": "num"
+            },
+            {
+                "t": "lte",
+                "v": "30",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 90,
+        "y": 300,
+        "wires": [
+            [
+                "0ebbbe06316ad5f0"
+            ],
+            [
+                "c9955e9b7cd3e461"
+            ],
+            [
+                "d90e804855095632"
+            ]
+        ]
+    },
+    {
+        "id": "0ebbbe06316ad5f0",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 240,
+        "y": 140,
+        "wires": [
+            [
+                "a0c8f0cc2112b6d6",
+                "f20881f9973fa64f",
+                "e324f96b45fb1c26"
+            ]
+        ]
+    },
+    {
+        "id": "c9955e9b7cd3e461",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 240,
+        "y": 300,
+        "wires": [
+            [
+                "0b6efacda9d93b0e",
+                "82e8e4f2247bf0a7",
+                "e324f96b45fb1c26"
+            ]
+        ]
+    },
+    {
+        "id": "d90e804855095632",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 240,
+        "y": 440,
+        "wires": [
+            [
+                "d82672095251a9db",
+                "f20881f9973fa64f",
+                "0b6efacda9d93b0e"
+            ]
+        ]
+    },
+    {
+        "id": "a0c8f0cc2112b6d6",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "Overheating",
+        "group": "a0b06d78f45c5cfe",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#ff0000"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 630,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "0b6efacda9d93b0e",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 200,
+        "wires": [
+            [
+                "a0c8f0cc2112b6d6"
+            ]
+        ]
+    },
+    {
+        "id": "82e8e4f2247bf0a7",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "Hot",
+        "group": "a0b06d78f45c5cfe",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#ffbb00"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 610,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "f20881f9973fa64f",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 240,
+        "wires": [
+            [
+                "82e8e4f2247bf0a7"
+            ]
+        ]
+    },
+    {
+        "id": "d82672095251a9db",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "OK tempreature",
+        "group": "a0b06d78f45c5cfe",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#66ff00"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 640,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "e324f96b45fb1c26",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 360,
+        "wires": [
+            [
+                "d82672095251a9db"
+            ]
+        ]
+    },
+    {
+        "id": "bbb1fd90c96833fe",
+        "type": "switch",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "property": "payload.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "60",
+                "vt": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "31",
+                "vt": "num",
+                "v2": "59",
+                "v2t": "num"
+            },
+            {
+                "t": "lte",
+                "v": "30",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 70,
+        "y": 700,
+        "wires": [
+            [
+                "609fc5ae41212edc"
+            ],
+            [
+                "2d5470e8b7befc06"
+            ],
+            [
+                "7d1a6c75c3a664f7"
+            ]
+        ]
+    },
+    {
+        "id": "609fc5ae41212edc",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 600,
+        "wires": [
+            [
+                "e4c4860683772306",
+                "4451780f993f4b91",
+                "2dc0c5876a632800"
+            ]
+        ]
+    },
+    {
+        "id": "2d5470e8b7befc06",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 700,
+        "wires": [
+            [
+                "7cedfbaf749c438e",
+                "d8dbf9982d814159",
+                "2dc0c5876a632800"
+            ]
+        ]
+    },
+    {
+        "id": "7d1a6c75c3a664f7",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 800,
+        "wires": [
+            [
+                "61785253704fc89e",
+                "4451780f993f4b91",
+                "7cedfbaf749c438e"
+            ]
+        ]
+    },
+    {
+        "id": "e4c4860683772306",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "Overly humid",
+        "group": "a0b06d78f45c5cfe",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#ff0000"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 790,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "7cedfbaf749c438e",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 600,
+        "wires": [
+            [
+                "e4c4860683772306"
+            ]
+        ]
+    },
+    {
+        "id": "d8dbf9982d814159",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "Humid",
+        "group": "a0b06d78f45c5cfe",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#ffbb00"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 770,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "4451780f993f4b91",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 640,
+        "wires": [
+            [
+                "d8dbf9982d814159"
+            ]
+        ]
+    },
+    {
+        "id": "61785253704fc89e",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "OK humidity",
+        "group": "a0b06d78f45c5cfe",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#66ff00"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 790,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "2dc0c5876a632800",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 740,
+        "wires": [
+            [
+                "61785253704fc89e"
+            ]
+        ]
+    },
+    {
+        "id": "3178fb366ec535bf",
+        "type": "switch",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "property": "payload.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "11",
+                "vt": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "10",
+                "vt": "num",
+                "v2": "6",
+                "v2t": "num"
+            },
+            {
+                "t": "lte",
+                "v": "5",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 70,
+        "y": 1080,
+        "wires": [
+            [
+                "5f3a54465369e474"
+            ],
+            [
+                "c217901073922e00"
+            ],
+            [
+                "7d900abd9fdf631c"
+            ]
+        ]
+    },
+    {
+        "id": "5f3a54465369e474",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 980,
+        "wires": [
+            [
+                "e4899cd5dfd3ba09",
+                "bcd0b871f0a43431",
+                "ab4cd407cf72ad71"
+            ]
+        ]
+    },
+    {
+        "id": "c217901073922e00",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 1080,
+        "wires": [
+            [
+                "b1334dc2dbf94384",
+                "9befe3f81eaf0279",
+                "ab4cd407cf72ad71"
+            ]
+        ]
+    },
+    {
+        "id": "7d900abd9fdf631c",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 1180,
+        "wires": [
+            [
+                "8c82b5236e94aedb",
+                "bcd0b871f0a43431",
+                "b1334dc2dbf94384"
+            ]
+        ]
+    },
+    {
+        "id": "e4899cd5dfd3ba09",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "Strong vibrations",
+        "group": "a0b06d78f45c5cfe",
+        "order": 9,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#ff0000"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 810,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "b1334dc2dbf94384",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 980,
+        "wires": [
+            [
+                "e4899cd5dfd3ba09"
+            ]
+        ]
+    },
+    {
+        "id": "9befe3f81eaf0279",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "medium vibrations",
+        "group": "a0b06d78f45c5cfe",
+        "order": 10,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#ffbb00"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 810,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "bcd0b871f0a43431",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 1020,
+        "wires": [
+            [
+                "9befe3f81eaf0279"
+            ]
+        ]
+    },
+    {
+        "id": "8c82b5236e94aedb",
+        "type": "ui-led",
+        "z": "e94e6d738d65be87",
+        "name": "small vibrations",
+        "group": "a0b06d78f45c5cfe",
+        "order": 11,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "states": [
+            {
+                "value": "false",
+                "valueType": "bool",
+                "color": "#000000"
+            },
+            {
+                "value": "true",
+                "valueType": "bool",
+                "color": "#66ff00"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showBorder": true,
+        "showGlow": true,
+        "x": 800,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "ab4cd407cf72ad71",
+        "type": "change",
+        "z": "e94e6d738d65be87",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 1120,
+        "wires": [
+            [
+                "8c82b5236e94aedb"
+            ]
+        ]
+    },
+    {
+        "id": "dbb044c74926fa3d",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Data smoothing",
+        "func": "// ---------------------------\n// CONFIGURATION\nconst WINDOW_SIZE = 5; // smoothing window\n// ---------------------------\n\n// Get raw value (same source as before)\nlet rawValue = Number(msg.payload.col4);\n\n// Buffer stored in context (required for smoothing)\nlet buffer = context.get(\"buffer\") || [];\n\n// Add current value\nbuffer.push(rawValue);\n\n// Keep fixed window size\nif (buffer.length > WINDOW_SIZE) {\n    buffer.shift();\n}\n\n// Save buffer back to context\ncontext.set(\"buffer\", buffer);\n\n// Compute moving average\nlet sum = 0;\nfor (let i = 0; i < buffer.length; i++) {\n    sum += buffer[i];\n}\nlet smoothedValue = sum / buffer.length;\n\n// ---------------------------\n// SAME VARIABLE NAMES AS BEFORE\n// ---------------------------\n\n// Get timestamp (unchanged)\nlet isoTime = msg.payload.col1;\nlet dateObj = new Date(isoTime);\n\n// Assign EXACT same fields used by chart\nmsg.payload.time = dateObj;\nmsg.payload.timeLabel = dateObj.toTimeString().split(' ')[0];\nmsg.payload.value = smoothedValue;\n\n// Return message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1980,
+        "y": 300,
+        "wires": [
+            [
+                "84a23f05e594f99d"
+            ]
+        ]
+    },
+    {
+        "id": "84a23f05e594f99d",
+        "type": "ui-chart",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "",
+        "label": "Smoothed Tempreature chart",
+        "order": 3,
+        "chartType": "line",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "Time",
+        "xAxisProperty": "payload.timeLabel",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "category",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "Tempreature ",
+        "yAxisProperty": "payload.value",
+        "yAxisPropertyType": "msg",
+        "ymin": "0",
+        "ymax": "100",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "30",
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "50",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "interpolation": "linear",
+        "x": 2360,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9b34fd26e20add2b",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Format Timestamp",
+        "func": "// Get the ISO timestamp from the CSV output\nlet isoTime = msg.payload.col1;\n\n// Create a Date object (used for X-axis)\nlet dateObj = new Date(isoTime);\nmsg.payload.time = dateObj;  // pass Date object to chart\n\n// Optionally, keep a formatted string for display\nmsg.payload.timeLabel = dateObj.toTimeString().split(' ')[0]; // \"HH:MM:SS\"\n\n// Keep only the value for Y-axis\nmsg.payload.value = msg.payload.col4;\n\n// Return the message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1990,
+        "y": 500,
+        "wires": [
+            [
+                "a0906f12eccfd324"
+            ]
+        ]
+    },
+    {
+        "id": "ecc29edde094cc52",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Format Timestamp",
+        "func": "// Get the ISO timestamp from the CSV output\nlet isoTime = msg.payload.col1;\n\n// Create a Date object (used for X-axis)\nlet dateObj = new Date(isoTime);\nmsg.payload.time = dateObj;  // pass Date object to chart\n\n// Optionally, keep a formatted string for display\nmsg.payload.timeLabel = dateObj.toTimeString().split(' ')[0]; // \"HH:MM:SS\"\n\n// Keep only the value for Y-axis\nmsg.payload.value = msg.payload.col4;\n\n// Return the message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1990,
+        "y": 420,
+        "wires": [
+            [
+                "d978b39a845d2f9b"
+            ]
+        ]
+    },
+    {
+        "id": "d978b39a845d2f9b",
+        "type": "ui-chart",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "",
+        "label": "humidity chart",
+        "order": 5,
+        "chartType": "line",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "Time",
+        "xAxisProperty": "payload.timeLabel",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "category",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "Humidity",
+        "yAxisProperty": "payload.value",
+        "yAxisPropertyType": "msg",
+        "ymin": "0",
+        "ymax": "100",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "30",
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "50",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "interpolation": "linear",
+        "x": 2320,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d0ed2b9f78e921e7",
+        "type": "ui-chart",
+        "z": "e94e6d738d65be87",
+        "group": "351782d222903438",
+        "name": "",
+        "label": "Smoothed vibration chart",
+        "order": 9,
+        "chartType": "line",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "Vibrations",
+        "xAxisProperty": "payload.timeLabel",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "category",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "Tempreature ",
+        "yAxisProperty": "payload.value",
+        "yAxisPropertyType": "msg",
+        "ymin": "0",
+        "ymax": "15",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "30",
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "50",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "interpolation": "linear",
+        "x": 2350,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4f6ff1573816f7fc",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Data smoothing",
+        "func": "// ---------------------------\n// CONFIGURATION\nconst WINDOW_SIZE = 3; // smoothing window\n// ---------------------------\n\n// Get raw value (same source as before)\nlet rawValue = Number(msg.payload.col4);\n\n// Buffer stored in context (required for smoothing)\nlet buffer = context.get(\"buffer\") || [];\n\n// Add current value\nbuffer.push(rawValue);\n\n// Keep fixed window size\nif (buffer.length > WINDOW_SIZE) {\n    buffer.shift();\n}\n\n// Save buffer back to context\ncontext.set(\"buffer\", buffer);\n\n// Compute moving average\nlet sum = 0;\nfor (let i = 0; i < buffer.length; i++) {\n    sum += buffer[i];\n}\nlet smoothedValue = sum / buffer.length;\n\n// ---------------------------\n// SAME VARIABLE NAMES AS BEFORE\n// ---------------------------\n\n// Get timestamp (unchanged)\nlet isoTime = msg.payload.col1;\nlet dateObj = new Date(isoTime);\n\n// Assign EXACT same fields used by chart\nmsg.payload.time = dateObj;\nmsg.payload.timeLabel = dateObj.toTimeString().split(' ')[0];\nmsg.payload.value = smoothedValue;\n\n// Return message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1980,
+        "y": 380,
+        "wires": [
+            [
+                "d36e9f821484ac6d"
+            ]
+        ]
+    },
+    {
+        "id": "46f2f766275650f0",
+        "type": "function",
+        "z": "e94e6d738d65be87",
+        "name": "Data smoothing",
+        "func": "// ---------------------------\n// CONFIGURATION\nconst WINDOW_SIZE = 3; // smoothing window\n// ---------------------------\n\n// Get raw value (same source as before)\nlet rawValue = Number(msg.payload.col4);\n\n// Buffer stored in context (required for smoothing)\nlet buffer = context.get(\"buffer\") || [];\n\n// Add current value\nbuffer.push(rawValue);\n\n// Keep fixed window size\nif (buffer.length > WINDOW_SIZE) {\n    buffer.shift();\n}\n\n// Save buffer back to context\ncontext.set(\"buffer\", buffer);\n\n// Compute moving average\nlet sum = 0;\nfor (let i = 0; i < buffer.length; i++) {\n    sum += buffer[i];\n}\nlet smoothedValue = sum / buffer.length;\n\n// ---------------------------\n// SAME VARIABLE NAMES AS BEFORE\n// ---------------------------\n\n// Get timestamp (unchanged)\nlet isoTime = msg.payload.col1;\nlet dateObj = new Date(isoTime);\n\n// Assign EXACT same fields used by chart\nmsg.payload.time = dateObj;\nmsg.payload.timeLabel = dateObj.toTimeString().split(' ')[0];\nmsg.payload.value = smoothedValue;\n\n// Return message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1980,
+        "y": 460,
+        "wires": [
+            [
+                "d0ed2b9f78e921e7"
+            ]
+        ]
+    },
+    {
+        "id": "de8065791420b99a",
+        "type": "mqtt-broker",
+        "name": "LWN-server",
+        "broker": "host.docker.internal",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "a0b06d78f45c5cfe",
+        "type": "ui-group",
+        "name": "Real Time",
+        "page": "91aeba0fb09c4adf",
+        "width": 6,
+        "height": 1,
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "351782d222903438",
+        "type": "ui-group",
+        "name": "Charts",
+        "page": "91aeba0fb09c4adf",
+        "width": 6,
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "91aeba0fb09c4adf",
+        "type": "ui-page",
+        "name": "Page 1",
+        "ui": "4663d76aab272eb3",
+        "path": "/page1",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "438e162691cba03d",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": 0,
+                "cols": 3
+            },
+            {
+                "name": "Tablet",
+                "px": 576,
+                "cols": 6
+            },
+            {
+                "name": "Small Desktop",
+                "px": 768,
+                "cols": 9
+            },
+            {
+                "name": "Desktop",
+                "px": 1024,
+                "cols": 12
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "4663d76aab272eb3",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "438e162691cba03d",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "b851d6f43064b0f1",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.29.0",
+            "@flowfuse/node-red-dashboard-2-ui-led": "1.1.0"
+        }
+    }
+]
